@@ -12,10 +12,10 @@ def extract_transactions_from_pdf(pdf_path):
     try:
         # Abrir el archivo PDF
         with open(pdf_path, 'rb') as file:
-            pdf_reader = PyPDF2.PdfReader(file)
+            AL_pdf_reader = PyPDF2.PdfReader(file)
             text = ""
             # Extraer texto de todas las páginas
-            for page in pdf_reader.pages:
+            for page in AL_pdf_reader.pages:
                 text += page.extract_text() + "\n"
         
         print(f"Procesando archivo: {pdf_path}")
@@ -170,12 +170,12 @@ def extract_transactions_from_pdf(pdf_path):
         print(f"Error procesando el PDF: {e}")
         return pd.DataFrame(columns=['Fecha', 'Tipo de transacción', 'Descripción', 'Valor'])
 
-def save_to_excel(df, output_path):
+def save_to_excel(df, AL_output_path):
     """
     Guarda el DataFrame en un archivo Excel con formato adecuado.
     """
     try:
-        with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(AL_output_path, engine='xlsxwriter') as writer:
             # Escribir el DataFrame en el archivo Excel
             df.to_excel(writer, index=False, sheet_name='Movimientos')
             
@@ -203,19 +203,19 @@ def save_to_excel(df, output_path):
             worksheet.set_column('C:C', 80)  # Descripción
             worksheet.set_column('D:D', 15, formato_moneda)  # Valor
             
-            print(f"✓ Archivo Excel guardado: {output_path}")
+            print(f"✓ Archivo Excel guardado: {AL_output_path}")
             
     except Exception as e:
         print(f"Error guardando el archivo Excel: {e}")
 
-def process_pdf_to_excel(pdf_path, output_path=None):
+def process_pdf_to_excel(pdf_path, AL_output_path=None):
     """
     Función principal para procesar un PDF y convertirlo a Excel
     """
-    if not output_path:
+    if not AL_output_path:
         # Generar nombre de archivo Excel basado en el PDF
         base_name = os.path.splitext(os.path.basename(pdf_path))[0]
-        output_path = f"{base_name}_Movimientos.xlsx"
+        AL_output_path = f"{base_name}_Movimientos.xlsx"
     
     # Verificar que el archivo PDF existe
     if not os.path.exists(pdf_path):
@@ -230,17 +230,17 @@ def process_pdf_to_excel(pdf_path, output_path=None):
         return None
     
     # Guardar en Excel
-    save_to_excel(df, output_path)
+    save_to_excel(df, AL_output_path)
     
     # Mostrar resumen
     print(f"\n📊 Resumen:")
     print(f"   • Transacciones procesadas: {len(df)}")
-    print(f"   • Archivo de salida: {output_path}")
+    print(f"   • Archivo de salida: {AL_output_path}")
     
     # Verificar si hay fechas válidas
-    fechas_validas = df['Fecha'].notna()
-    if fechas_validas.any():
-        print(f"   • Rango de fechas: {df[fechas_validas]['Fecha'].min().strftime('%d/%m/%Y')} - {df[fechas_validas]['Fecha'].max().strftime('%d/%m/%Y')}")
+    AL_fechas_validas = df['Fecha'].notna()
+    if AL_fechas_validas.any():
+        print(f"   • Rango de fechas: {df[AL_fechas_validas]['Fecha'].min().strftime('%d/%m/%Y')} - {df[AL_fechas_validas]['Fecha'].max().strftime('%d/%m/%Y')}")
     else:
         print("   • Advertencia: No se pudieron procesar las fechas correctamente")
     
@@ -258,10 +258,10 @@ def process_pdf_to_excel(pdf_path, output_path=None):
 # Ejemplo de uso
 if __name__ == "__main__":
     # Nombre del archivo PDF a procesar
-    pdf_file = "archivo.pdf"  # Cambia este nombre por tu archivo
+    AL_pdf_file = "archivo.pdf"  # Cambia este nombre por tu archivo
     
     # Procesar el PDF
-    df = process_pdf_to_excel(pdf_file)
+    df = process_pdf_to_excel(AL_pdf_file)
     
     # También puedes especificar el nombre del archivo de salida
     # df = process_pdf_to_excel("mi_archivo.pdf", "mi_salida.xlsx")
